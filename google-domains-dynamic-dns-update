@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 # Update Google domain using Google domain's API.
 # https://support.google.com/domains/answer/6147083?hl=en
