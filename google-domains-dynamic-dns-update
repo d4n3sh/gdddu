@@ -1,0 +1,42 @@
+#!/bin/bash -x
+#
+# Update Google domain using Google domain's API.
+# https://support.google.com/domains/answer/6147083?hl=en
+#
+
+# Make sure the variables below are updated with their correct values.
+username="CHANGEME"
+password="CHANGEME"
+fqdn="CHANGEME"
+
+# Get current domain IP.
+function get_domain_ip()
+{
+  local ip="$(dig +short ${fqdn} @8.8.8.8)"
+  echo ${ip}
+}
+
+# Get my public IP.
+function get_public_ip()
+{
+  #local ip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+  local ip="$(curl --silent https://domains.google.com/checkip)"
+  echo ${ip}
+}
+
+# Update Google domain IP
+function update_domain()
+{
+  local update_url="$(curl --silent https://${1}:${2}@domains.google.com/nic/update?hostname=${3}&myip=${4})"
+  echo ${update_url}
+}
+
+# Main
+domainip="$(get_domain_ip)"
+publicip="$(get_public_ip)"
+
+if [[ "${domainip}" != "${publicip}" ]] ; then
+  update_domain ${username} ${password} ${fqdn} "${publicip}"
+else
+  echo "No update required. ${fqdn}:${domainip}"
+fi
